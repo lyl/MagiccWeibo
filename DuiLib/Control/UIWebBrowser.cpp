@@ -111,6 +111,11 @@ STDMETHODIMP DuiLib::CWebBrowserUI::Invoke( DISPID dispIdMember, REFIID riid, LC
 // 			TRACE(_T("PropertyChange(%s)\n"), pDispParams->rgvarg[0].bstrVal);
 // 		}
 // 		break;
+	case DISPID_DOCUMENTCOMPLETE:
+		{
+			DocumentComplete(pDispParams->rgvarg[1].pdispVal,pDispParams->rgvarg[0].pvarVal);
+		}
+		break;
 	default:
 		return DISP_E_MEMBERNOTFOUND;
 	}
@@ -712,4 +717,12 @@ HRESULT STDMETHODCALLTYPE DuiLib::CWebBrowserUI::Exec( __RPC__in_opt const GUID 
 		hr = OLECMDERR_E_UNKNOWNGROUP;
 	}
 	return (hr);
+}
+
+void DuiLib::CWebBrowserUI::DocumentComplete( IDispatch *pDisp , VARIANT *&url )
+{
+	if (m_pWebBrowserEventHandler)
+	{
+		m_pWebBrowserEventHandler->DocumentComplete(pDisp,url);
+	}
 }

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "main_frame.h"
 #include "RichEditUIEx.h"
+#include "MagiccWebBrowserEventHandler.h"
 
 main_frame::main_frame(void)
 {
@@ -102,18 +103,60 @@ void main_frame::Notify( TNotifyUI& msg )
 				
 			}
 		}
+		else if (_tcsicmp(msg.pSender->GetName(),_T("sendWeiboBtn")) == 0)
+		{
+			CRichEditUI *pRichEdit = static_cast<CRichEditUI*>(m_PaintManager.FindControl(_T("weiboContent")));
+			if (pRichEdit)
+			{
+				CDuiString strWeibo = pRichEdit->GetText();
+				if (strWeibo.GetLength() > 0)
+				{
+					DWORD dwNum = WideCharToMultiByte(CP_UTF8,NULL,strWeibo,-1,NULL,0,NULL,FALSE);
+					char *psText;
+					psText = new char[dwNum];
+					if(!psText)
+					{
+						delete []psText;
+					}
+					WideCharToMultiByte (CP_UTF8,NULL,strWeibo,-1,psText,dwNum,NULL,FALSE);
+					m_weiboPtr->getMethod()->postStatusesUpdate(psText, NULL, NULL);
+
+					delete []psText;
+
+					pRichEdit->SetText(_T(""));
+				}
+			}
+		}
 	}
 	
 }
 
 void main_frame::OnPrepare( TNotifyUI& msg )
 {
+	m_weiboPtr = weibo::WeiboFactory::getWeibo();
+
+	m_weiboPtr->startup();
+	m_weiboPtr->setOption(weibo::WOPT_CONSUMER, APP_KEY, APP_SECRET);
+
+	m_weiboPtr->OnDelegateComplated += std::make_pair(this,&main_frame::OnWeiboRespComplated);
+	m_weiboPtr->OnDelegateErrored += std::make_pair(this,&main_frame::OnWeiboRespErrored);
+	m_weiboPtr->OnDelegateWillRelease += std::make_pair(this,&main_frame::OnWeiboRespStoped);
+
 	CRichEditUI *pWeiboCotent = static_cast<CRichEditUI*>(m_PaintManager.FindControl(_T("weiboContent")));
 	if (pWeiboCotent)
 	{
 		pWeiboCotent->OnEvent += MakeDelegate(this,&main_frame::OnWeiboContentEvent);
 		pWeiboCotent->OnNotify += MakeDelegate(this,&main_frame::OnWeiboContentNotify);
 	}
+	CWebBrowserUI *pLoginWeb = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("loginWnd")));
+	if (pLoginWeb)
+	{
+		m_pWebBrowserEventHander = new CMagiccWebBrowserEventHandler;
+		m_pWebBrowserEventHander->SetMainFrame(this);
+		pLoginWeb->SetWebBrowserEventHandler(m_pWebBrowserEventHander);
+		pLoginWeb->NavigateUrl(_T("https://api.weibo.com/oauth2/authorize?client_id=397065771&response_type=code&redirect_uri=www.baidu.com"));
+	}
+
 }
 
 void main_frame::OnExit( TNotifyUI& msg )
@@ -131,6 +174,12 @@ void main_frame::OnTimer( TNotifyUI& msg )
 
 LRESULT main_frame::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+
+	if (m_pWebBrowserEventHander)
+	{
+		delete m_pWebBrowserEventHander;
+		m_pWebBrowserEventHander = NULL;
+	}
 
 	int i = 255;
 	int j = 0;
@@ -256,4 +305,77 @@ bool main_frame::OnWeiboContentNotify( void *param )
 
 	}	
 	return true;
+}
+
+void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHeader, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask )
+{
+	if (result)
+	{
+		ParsingObject* tempObject = new ParsingObject(*result);
+		ParsingObjectPtr objPtr(tempObject);
+		// The special event.
+		switch(optionId)
+		{
+		case WBOPT_OAUTH2_ACCESS_TOKEN:
+			{
+				USES_CONVERSION;
+				ParsingOauthRet ret;
+				ret.doParse(objPtr);
+
+				m_strUid = ret.uid;
+				
+				//std::string access_token = objPtr->getSubStringByKey("access_token");
+
+				m_weiboPtr->setOption(WOPT_ACCESS_TOKEN, ret.access_token.c_str());
+				
+			}
+			break;
+		case WBOPT_POST_STATUSES_UPDATE:
+			{
+				//m_logInfo.AppendText(_T("\r\nÎ¢²©·¢ËÍ³É¹¦!"));
+			}
+			break;
+		case WBOPT_GET_REMIND_UNREAD_COUNT:
+			{
+				USES_CONVERSION;
+				string strCountUnRead = objPtr->getSubStringByKey("status");
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void main_frame::OnWeiboRespErrored( unsigned int optionId, const int errCode, const int errSubCode, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask )
+{
+
+}
+
+void main_frame::OnWeiboRespStoped( unsigned int optionId, const weibo::UserTaskInfo* pTask )
+{
+
+}
+
+void main_frame::OnAuthSuccess( VARIANT *&url )
+{
+	USES_CONVERSION;
+	LPCTSTR lpstrAddress = (LPCTSTR)url->bstrVal;
+
+	CDuiString str(lpstrAddress);
+
+	int pos  = -1;
+	pos = str.Find('=');
+
+	CDuiString retnCode = str.Right(str.GetLength() - pos - 1);
+
+	m_weiboPtr->getMethod()->oauth2Code(W2A(retnCode), REDIRECT_URL , NULL);
+
+	CWebBrowserUI *pLoginWeb = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("loginWnd")));
+	if (pLoginWeb)
+	{
+		pLoginWeb->SetVisible(false);
+	}
+
 }

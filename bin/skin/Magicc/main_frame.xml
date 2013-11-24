@@ -20,16 +20,18 @@
 				</HorizontalLayout>
 			</HorizontalLayout>
 			<HorizontalLayout>
-				<VerticalLayout width="155" height="580" bkcolor="#FFCCEEF8">
-
-				</VerticalLayout>
-				<VerticalLayout width="869" height="580" bkcolor="#FFFFFFFF">
-
+				<VerticalLayout width="155" bkcolor="#FFCCEEF8">
+          <Button name="userNameBtn" width="155" text="主页" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF"></Button>
+          <Button name="atMeBtn" width="155" text="@我的信息" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+          <Button name="myWeiboBtn" width="155" text="我的微博" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+        </VerticalLayout>
+				<VerticalLayout  bkcolor="#FFFFFFFF">
+          <WebBrowser name="loginWnd" homepage="www.baidu.com"></WebBrowser>
 				</VerticalLayout>
 			</HorizontalLayout>
 			<HorizontalLayout height="90">
 				<VerticalLayout width="155" height="90" bkcolor="#FFADE4F3">
-					
+          
 				</VerticalLayout>
 				<HorizontalLayout bkcolor="FFCCEEF8">
 					<HorizontalLayout width="100" inset="10,26,0,0">
