@@ -43,10 +43,12 @@ public:
 
 	bool OnWeiboContentEvent(void *param);
 	bool OnWeiboContentNotify(void *param);
+	bool OnRefreshUnReadTimeline(void *param);
 
 public:
 
 	void OnAuthSuccess(VARIANT *&url);
+	void OnAuthSuccess(CDuiString &strUrl);
 
 	void OnWeiboRespComplated(unsigned int optionId, const char* httpHeader, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask);
 
@@ -60,9 +62,11 @@ protected:
 	void OnPrepare(TNotifyUI& msg);
 	void OnExit(TNotifyUI& msg);
 	void OnTimer(TNotifyUI& msg);
-	
+	void RefreshTimeline(ParsingObjectPtr &parsingObjPtr);
 private:
 	string m_strUid;
 	CMagiccWebBrowserEventHandler*	m_pWebBrowserEventHander;
 	boost::shared_ptr<weibo::IWeibo> m_weiboPtr;
+
+	CDialogBuilder m_dlgBuilder;
 };

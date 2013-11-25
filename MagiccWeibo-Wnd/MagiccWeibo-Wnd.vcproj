@@ -286,6 +286,10 @@
 				RelativePath="..\bin\skin\Magicc\main_frame.xml"
 				>
 			</File>
+			<File
+				RelativePath="..\bin\skin\Magicc\weibo_info_list.xml"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
