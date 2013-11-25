@@ -116,6 +116,11 @@ STDMETHODIMP DuiLib::CWebBrowserUI::Invoke( DISPID dispIdMember, REFIID riid, LC
 			DocumentComplete(pDispParams->rgvarg[1].pdispVal,pDispParams->rgvarg[0].pvarVal);
 		}
 		break;
+	case DISPID_DOWNLOADBEGIN:
+		{
+			DownloadBegin();
+		}
+		break;
 	default:
 		return DISP_E_MEMBERNOTFOUND;
 	}
@@ -724,5 +729,22 @@ void DuiLib::CWebBrowserUI::DocumentComplete( IDispatch *pDisp , VARIANT *&url )
 	if (m_pWebBrowserEventHandler)
 	{
 		m_pWebBrowserEventHandler->DocumentComplete(pDisp,url);
+	}
+}
+
+void DuiLib::CWebBrowserUI::DownloadBegin()
+{
+	if (m_pWebBrowserEventHandler)
+	{
+		CDuiString currentUrl;
+		BSTR pUrl;
+		HRESULT retn = m_pWebBrowser2->get_LocationURL(&pUrl);
+		if (retn == S_OK)
+		{
+			currentUrl.Format(_T("%s"),pUrl);
+			m_pWebBrowserEventHandler->DownloadBegin(currentUrl);
+			SysFreeString(pUrl);
+		}
+		
 	}
 }

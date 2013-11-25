@@ -18,6 +18,7 @@ namespace DuiLib
 		virtual void NewWindow3(IDispatch **pDisp, VARIANT_BOOL *&Cancel, DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl){}
 		virtual void CommandStateChange(long Command,VARIANT_BOOL Enable){};
 		virtual void DocumentComplete(IDispatch *pDisp,VARIANT *&url){};
+		virtual void DownloadBegin(CDuiString &strUrl){};
 		// interface IDocHostUIHandler
 		virtual HRESULT STDMETHODCALLTYPE ShowContextMenu(
 			/* [in] */ DWORD dwID,
@@ -152,4 +153,6 @@ namespace DuiLib
 			return S_OK;
 		}
 	};
+
+
 }

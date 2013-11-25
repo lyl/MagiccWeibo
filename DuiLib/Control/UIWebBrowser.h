@@ -63,6 +63,7 @@ namespace DuiLib
 		void NewWindow3(IDispatch **pDisp, VARIANT_BOOL *&Cancel, DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
 		void CommandStateChange(long Command,VARIANT_BOOL Enable);
 		void DocumentComplete(IDispatch *pDisp , VARIANT *&url);
+		void DownloadBegin();
 
 	public:
 		virtual LPCTSTR GetClass() const;
