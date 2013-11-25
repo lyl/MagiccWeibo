@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<ListContainerElement>
+		<HorizontalLayout>
+			<HorizontalLayout width="55">
+				<Button name="userLogo" bkimage="LOGO_48x48.png" width="48" height="48" ></Button>
+			</HorizontalLayout>
+			<HorizontalLayout>
+				<VerticalLayout>
+					<Label name="userScreenName" font="1" textcolor="#FF000000"></Label>
+					<Text name="weiboInfo"></Text>
+				</VerticalLayout>
+				<HorizontalLayout>
+					<Button name="weiboTime" textcolor="#FFDAE9F3"></Button>
+				</HorizontalLayout>
+			</HorizontalLayout>
+		</HorizontalLayout>
+	</ListContainerElement>
+</Window>

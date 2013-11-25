@@ -21,12 +21,16 @@
 			</HorizontalLayout>
 			<HorizontalLayout>
 				<VerticalLayout width="155" bkcolor="#FFCCEEF8">
-          <Button name="userNameBtn" width="155" text="主页" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF"></Button>
-          <Button name="atMeBtn" width="155" text="@我的信息" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
-          <Button name="myWeiboBtn" width="155" text="我的微博" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
-        </VerticalLayout>
+					<HorizontalLayout height="20">
+						<Button name="userNameBtn" text="时间轴" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF"/>
+						<Label name="unreadTimelineCount" align="right" text="" bkcolor="#FFFFFFFF"></Label>
+					</HorizontalLayout>
+					<Button name="atMeBtn" width="155" text="@我的信息" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+					<Button name="myWeiboBtn" width="155" text="我的微博" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+				</VerticalLayout>
 				<VerticalLayout  bkcolor="#FFFFFFFF">
-          <WebBrowser name="loginWnd" homepage="www.baidu.com"></WebBrowser>
+					<WebBrowser name="loginWnd" homepage="www.baidu.com"></WebBrowser>
+					<List name="timelineList" header="hidden" visible="false" vscrollbar="true"></List>
 				</VerticalLayout>
 			</HorizontalLayout>
 			<HorizontalLayout height="90">
