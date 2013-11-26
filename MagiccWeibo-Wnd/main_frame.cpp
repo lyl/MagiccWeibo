@@ -346,6 +346,8 @@ void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHe
 
 				m_weiboPtr->setOption(WOPT_ACCESS_TOKEN, ret.access_token.c_str());
 				
+				m_weiboPtr->getMethod()->getStatusesFriendTimeline();
+
 			}
 			break;
 		case WBOPT_POST_STATUSES_UPDATE:
@@ -410,10 +412,6 @@ void main_frame::OnAuthSuccess( VARIANT *&url )
 		pLoginWeb->SetVisible(false);
 	}
 
-	Sleep(1000);
-
-	m_weiboPtr->getMethod()->getStatusesFriendTimeline();
-
 	CLabelUI *pUnReadTimelineCount = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
 	if (pUnReadTimelineCount)
 	{
@@ -437,10 +435,6 @@ void main_frame::OnAuthSuccess( CDuiString &strUrl )
 	{
 		pLoginWeb->SetVisible(false);
 	}
-
-	Sleep(1000);
-
-	m_weiboPtr->getMethod()->getStatusesFriendTimeline();
 	
 	CLabelUI *pUnReadTimelineCount = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
 	if (pUnReadTimelineCount)
@@ -535,6 +529,7 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 			pTimelineList->AddAt(pListContainerUI,0);
 		}
 		
+		pListContainerUI->SetFixedHeight(150);
 
 		delete []psText;
 		delete []psWeiboText;
