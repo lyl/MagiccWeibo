@@ -6,6 +6,7 @@
 	</Font>
 	<Font name="微软雅黑" size="55" blod="true" >
 	</Font>
+	<Default  name="VScrollBar" value="button1normalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; button2normalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; thumbnormalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; thumbhotimage=&quot;file='scrollbar.png' source='16,0,32,16'&quot; thumbpushedimage=&quot;file='scrollbar.png' source='16,0,32,16'&quot; bknormalimage=&quot;file='scrollbar.png' source='0,16,16,32'&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot; " />
 	<HorizontalLayout name="background"  bkcolor="#FFEEEEEE">
 		<VerticalLayout>
 			<HorizontalLayout height="30"  bkcolor="#FFFFFFFF">
