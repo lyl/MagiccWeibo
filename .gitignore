@@ -11,3 +11,17 @@
 *.lai
 *.la
 *.a
+*.obj
+/MagiccWeibo-Wnd/Debug_u/*.res
+/MagiccWeibo-Wnd/Debug_u/*.res
+/MagiccWeibo-Wnd/Debug_u/*.pch
+/MagiccWeibo-Wnd/Debug_u/*.obj
+/MagiccWeibo-Wnd/Debug_u/*.tlh
+/MagiccWeibo-Wnd/Debug_u/*.htm
+/MagiccWeibo-Wnd/Debug_u/*.manifest
+/MagiccWeibo-Wnd/Debug_u/*.dep
+/MagiccWeibo-Wnd/Debug_u/*.idb
+/MagiccWeibo-Wnd/Debug_u/*.obj
+/MagiccWeibo-Wnd/Debug_u/*.obj
+/MagiccWeibo-Wnd/Debug_u/*.manifest
+/bin/MagiccWeibo.exe
