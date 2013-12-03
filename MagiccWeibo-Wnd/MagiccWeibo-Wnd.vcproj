@@ -42,6 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;C:\Users\haily\Documents\dui\MagiccWeibo\third-party\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib"
+				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib"
 				OutputFile="../bin/MagiccWeibo.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -191,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PicDownloadManage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\RichEditUIEx.cpp"
 				>
 			</File>
@@ -242,6 +247,10 @@
 			</File>
 			<File
 				RelativePath=".\ParsingDefine.hxx"
+				>
+			</File>
+			<File
+				RelativePath=".\PicDownloadManage.h"
 				>
 			</File>
 			<File

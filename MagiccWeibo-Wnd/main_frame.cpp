@@ -5,10 +5,13 @@
 
 main_frame::main_frame(void)
 {
+	m_lastWeiboId = 0;
+	m_picDownload.StartUp();
 }
 
 main_frame::~main_frame(void)
 {
+	m_picDownload.ShutDown();
 	PostQuitMessage(0);
 }
 
@@ -129,7 +132,9 @@ void main_frame::Notify( TNotifyUI& msg )
 		}
 		else if (_tcsicmp(msg.pSender->GetName(),_T("refreshBtn")) == 0)
 		{
-			m_weiboPtr->getMethod()->getStatusesFriendTimeline();
+			VariableParams var;
+			var.since_id = m_lastWeiboId;
+			m_weiboPtr->getMethod()->getStatusesFriendTimeline(&var);
 		}
 	}
 	
@@ -384,7 +389,10 @@ void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHe
 
 void main_frame::OnWeiboRespErrored( unsigned int optionId, const int errCode, const int errSubCode, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask )
 {
-
+	if (optionId == WBOPT_OAUTH2_ACCESS_TOKEN)
+	{
+		int err = errCode;
+	}
 }
 
 void main_frame::OnWeiboRespStoped( unsigned int optionId, const weibo::UserTaskInfo* pTask )
@@ -463,12 +471,18 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 	{
 		ParsingObjectPtr pWeibo = pAllNewWeibo->getSubObjectByIndex(i);
 		string strText = pWeibo->getSubStringByKey("text");
-	//	m_lastWeiboID = atoi(pWeibo->getSubStringByKey("id").c_str());
+		m_lastWeiboId = _atoi64(pWeibo->getSubStringByKey("id").c_str());
 		ParsingObjectPtr pUser = pWeibo->getSubObjectByKey("user");
+
 		string strUser = "";
+		string profile_image_url = "";
+		string uid = "";
 		if (pUser)
 		{
+			uid = pUser->getSubStringByKey("id");
 			strUser = pUser->getSubStringByKey("screen_name");
+			profile_image_url = pUser->getSubStringByKey("profile_image_url");
+
 		}
 		else
 		{
@@ -494,7 +508,18 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		}
 		MultiByteToWideChar (CP_UTF8,NULL,strText.c_str(),-1,psWeiboText,dwNum);
 
+		CDuiString resPath = m_PaintManager.GetResourcePath();
 
+	
+		string picPath(W2A(resPath));
+
+		string relativePath = "Temp//" + uid + ".jpg"; 
+
+		picPath += relativePath;
+
+		
+		m_picDownload.SetPicName(picPath);
+		bool bSuccess = m_picDownload.DownloadPic(profile_image_url);
 	
 
 		CListContainerElementUI *pListContainerUI = NULL;
@@ -511,6 +536,12 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		if (pListContainerUI == NULL)
 		{
 			continue;
+		}
+
+		CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("userLogo")));
+		if (pUsrPic)
+		{
+			pUsrPic->SetBkImage(A2W(relativePath.c_str()));
 		}
 		
 		CLabelUI *pUserName = static_cast<CLabelUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("userScreenName")));

@@ -303,11 +303,11 @@ void CListUI::DoEvent(TEventUI& event)
         {
             switch( LOWORD(event.wParam) ) {
             case SB_LINEUP:
-                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel - 2, false), true);
                 else LineUp();
                 return;
             case SB_LINEDOWN:
-                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+                if( m_bScrollSelect ) SelectItem(FindSelectable(m_iCurSel + 2, true), true);
                 else LineDown();
                 return;
             }

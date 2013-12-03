@@ -9,6 +9,7 @@
 #include "ParsingDefine.hxx"
 #include "ParsingDataStruct.h"
 #include <util/threading/Lock.hxx>
+#include "PicDownloadManage.h"
 using namespace weibo;
 
 #define APP_KEY "397065771"
@@ -16,6 +17,7 @@ using namespace weibo;
 #define REDIRECT_URL "http://www.baidu.com"
 
 class CMagiccWebBrowserEventHandler;
+class CPicDownloadManage;
 class main_frame : public WindowImplBase
 {
 public:
@@ -69,4 +71,8 @@ private:
 	boost::shared_ptr<weibo::IWeibo> m_weiboPtr;
 
 	CDialogBuilder m_dlgBuilder;
+
+	CPicDownloadManage m_picDownload;
+
+	INT64 m_lastWeiboId;
 };
