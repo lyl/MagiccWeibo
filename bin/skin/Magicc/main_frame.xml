@@ -4,6 +4,8 @@
 	</Font>
 	<Font name="微软雅黑" size="15" blod="true">
 	</Font>
+	<Font name="微软雅黑" size="14" >
+	</Font>
 	<Font name="微软雅黑" size="55" blod="true" >
 	</Font>
 	<Default  name="VScrollBar" value="button1normalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; button2normalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; thumbnormalimage=&quot;file='scrollbar.png' source='0,0,16,16'&quot; thumbhotimage=&quot;file='scrollbar.png' source='16,0,32,16'&quot; thumbpushedimage=&quot;file='scrollbar.png' source='16,0,32,16'&quot; bknormalimage=&quot;file='scrollbar.png' source='0,16,16,32'&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot; " />
@@ -22,12 +24,34 @@
 			</HorizontalLayout>
 			<HorizontalLayout>
 				<VerticalLayout width="155" bkcolor="#FFCCEEF8">
-					<HorizontalLayout height="20">
-						<Button name="userNameBtn" text="时间轴" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF"/>
-						<Label name="unreadTimelineCount" align="right" text="" bkcolor="#FFFFFFFF"></Label>
-					</HorizontalLayout>
-					<Button name="atMeBtn" width="155" text="@我的信息" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
-					<Button name="myWeiboBtn" width="155" text="我的微博" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+					<List header="hidden" itemselectedbkcolor="#FFC1E3FF" itemhotbkcolor="#FFE9F5FF">
+						<ListContainerElement height="40" childpadding="10">
+							<HorizontalLayout bkcolor="#FFFFFFFF">
+								<Button name="currentUserPic"  padding="10,5,0,0" bkimage="LOGO_32x32.png" width="32" height="32" maxwidth="32" maxheight="32"></Button>
+								<Label name="currentUserScreenName" padding="10" text="用户名" font="2" ></Label>	
+							</HorizontalLayout>
+						</ListContainerElement>
+						<ListContainerElement height="30">
+							<HorizontalLayout bkcolor="#FFFFFFFF" padding="0,0,0,0">
+								<Label bkcolor="#FFFFFFFF" text="" width="32"></Label>
+								<Button name="userNameBtn"  font="1" padding="10" text="时间轴" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF">
+								</Button>
+								<Label name="unreadTimelineCount" width="30" text="" bkcolor="#FFFFFFFF" font="1" textcolor="#FFFF0000"></Label>
+							</HorizontalLayout>
+						</ListContainerElement>
+						<ListContainerElement height="30" >
+							<HorizontalLayout bkcolor="#FFFFFFFF">
+								<Label bkcolor="#FFFFFFFF" text="" width="32"></Label>
+								<Button text="@我的信息"  font="1" hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+							</HorizontalLayout>
+						</ListContainerElement>
+						<ListContainerElement height="30" >
+							<HorizontalLayout bkcolor="#FFFFFFFF">
+								<Label bkcolor="#FFFFFFFF" text="" width="32"></Label>
+								<Button text="我的微博" font="1"  hottextcolor="#FF0000FF"  bkcolor="#FFFFFFFF"></Button>
+							</HorizontalLayout>
+						</ListContainerElement>
+					</List>
 				</VerticalLayout>
 				<VerticalLayout  bkcolor="#FFFFFFFF">
 					<WebBrowser name="loginWnd" homepage="www.baidu.com"></WebBrowser>
@@ -46,7 +70,7 @@
 					<HorizontalLayout name="weiboContentContainer" bordercolor="#FFCCCCCC" padding="10,10,100,10" bordersize="2" focusbordercolor="#FF00A9DA">
 						<RichEditEx name="weiboContent"  padding="2,2,2,2"  bkcolor="#FFFFFFFF" font="1" multiline="true" inset="4,2,4,2" vscrollbar="true" autovscroll="true" enabled="true" rich="true" readonly="false">
 							<Label name="defaultShowText" align="top" text="说点什么吧？"  font="1" textcolor="#FFEAEAEA" pos="0,0,0,0" mouse="false" ></Label>
-							<Label name="limitTextLength" align="right"  text="140"  font="2" textcolor="#FFEAEAEA" pos="0,0,0,0" mouse="false" ></Label>
+							<Label name="limitTextLength" align="right"  text="140"  font="3" textcolor="#FFEAEAEA" pos="0,0,0,0" mouse="false" ></Label>
 						</RichEditEx>
 						<VerticalLayout width="50" padding="0,2,0,0">
 							<Button padding="2,12,0,0" bkcolor="#FFCCEEF8" name="sendWeiboBtn"  normalimage="appbar.page.upload.normal.png" hotimage="appbar.page.upload.hot.png" width="45" height="45" maxheight="45" maxwidth="45" align="center"></Button>

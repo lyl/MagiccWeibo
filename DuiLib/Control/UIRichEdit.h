@@ -74,6 +74,7 @@ public:
     bool SetWordCharFormat(CHARFORMAT2 &cf);
     DWORD GetParaFormat(PARAFORMAT2 &pf) const;
     bool SetParaFormat(PARAFORMAT2 &pf);
+	void ShowCaret(bool bShow);
     bool Redo();
     bool Undo();
     void Clear();

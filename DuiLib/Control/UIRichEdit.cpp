@@ -2283,6 +2283,14 @@ bool CRichEditUI::IsAccumulateDBCMode()
 	return m_fAccumulateDBC;
 }
 
+void CRichEditUI::ShowCaret( bool bShow )
+{
+	if (m_pTwh)
+	{
+		m_pTwh->TxShowCaret(bShow);
+	}
+}
+
 
 
 } // namespace DuiLib

@@ -7,6 +7,8 @@ main_frame::main_frame(void)
 {
 	m_lastWeiboId = 0;
 	m_picDownload.StartUp();
+
+	m_pWebBrowserEventHander = NULL;
 }
 
 main_frame::~main_frame(void)
@@ -157,13 +159,52 @@ void main_frame::OnPrepare( TNotifyUI& msg )
 		pWeiboCotent->OnEvent += MakeDelegate(this,&main_frame::OnWeiboContentEvent);
 		pWeiboCotent->OnNotify += MakeDelegate(this,&main_frame::OnWeiboContentNotify);
 	}
-	CWebBrowserUI *pLoginWeb = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("loginWnd")));
-	if (pLoginWeb)
+
+	USES_CONVERSION;
+
+	TCHAR cPath[MAX_PATH];
+	GetModuleFileName(NULL,cPath,MAX_PATH);
+	CString strPath = CString(cPath);
+	strPath = strPath.Left(strPath.ReverseFind('\\'));
+	strPath += _T("\\Config.ini");
+
+	TCHAR access_token[128] = {0};
+	TCHAR uid[128] = {0};
+
+	GetPrivateProfileStringW(_T("Main"),_T("access_token"),_T(""),access_token,128,strPath);
+	GetPrivateProfileStringW(_T("Main"),_T("uid"),_T(""),uid,128,strPath);
+
+	CDuiString strUid(uid);
+	if (strUid != _T(""))
 	{
-		m_pWebBrowserEventHander = new CMagiccWebBrowserEventHandler;
-		m_pWebBrowserEventHander->SetMainFrame(this);
-		pLoginWeb->SetWebBrowserEventHandler(m_pWebBrowserEventHander);
-		pLoginWeb->NavigateUrl(_T("https://api.weibo.com/oauth2/authorize?client_id=397065771&response_type=code&redirect_uri=www.baidu.com"));
+		m_strUid = W2A(strUid);
+	}
+
+	CWebBrowserUI *pLoginWeb = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("loginWnd")));
+
+	CDuiString token(access_token);
+	if (token != _T(""))
+	{
+		m_weiboPtr->setOption(weibo::WOPT_ACCESS_TOKEN,W2A(token));
+		ID var(ID::IDT_ID,m_strUid.c_str());
+		m_weiboPtr->getMethod()->getUsersShow(var);
+		m_weiboPtr->getMethod()->getStatusesFriendTimeline();
+
+		if (pLoginWeb)
+		{
+			pLoginWeb->SetVisible(false);
+		}
+	}
+	else
+	{
+		CWebBrowserUI *pLoginWeb = static_cast<CWebBrowserUI*>(m_PaintManager.FindControl(_T("loginWnd")));
+		if (pLoginWeb)
+		{
+			m_pWebBrowserEventHander = new CMagiccWebBrowserEventHandler;
+			m_pWebBrowserEventHander->SetMainFrame(this);
+			pLoginWeb->SetWebBrowserEventHandler(m_pWebBrowserEventHander);
+			pLoginWeb->NavigateUrl(_T("https://api.weibo.com/oauth2/authorize?client_id=397065771&response_type=code&redirect_uri=www.baidu.com"));
+		}
 	}
 
 	CLabelUI *pUnreadTimeline = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
@@ -334,6 +375,7 @@ void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHe
 {
 	if (result)
 	{
+		USES_CONVERSION;
 		ParsingObject* tempObject = new ParsingObject(*result);
 		ParsingObjectPtr objPtr(tempObject);
 		// The special event.
@@ -341,18 +383,77 @@ void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHe
 		{
 		case WBOPT_OAUTH2_ACCESS_TOKEN:
 			{
-				USES_CONVERSION;
+				
 				ParsingOauthRet ret;
 				ret.doParse(objPtr);
 
 				m_strUid = ret.uid;
-				
-				//std::string access_token = objPtr->getSubStringByKey("access_token");
 
 				m_weiboPtr->setOption(WOPT_ACCESS_TOKEN, ret.access_token.c_str());
+
+				TCHAR cPath[MAX_PATH];
+				GetModuleFileName(NULL,cPath,MAX_PATH);
+				CString strPath = CString(cPath);
+				strPath = strPath.Left(strPath.ReverseFind('\\'));
+				strPath += _T("\\Config.ini");
+
+				WritePrivateProfileString(_T("Main"),_T("access_token"),A2W(ret.access_token.c_str()),strPath);
+				WritePrivateProfileString(_T("Main"),_T("uid"),A2W(m_strUid.c_str()),strPath);
 				
+				ID var(ID::IDT_ID,m_strUid.c_str());
+			
+				m_weiboPtr->getMethod()->getUsersShow(var);
 				m_weiboPtr->getMethod()->getStatusesFriendTimeline();
 
+			}
+			break;
+		case WBOPT_GET_USERS_SHOW:
+			{
+				ParsingUser user;
+				user.doParse(objPtr);
+
+				string uid = user.id;
+				if (uid == m_strUid)
+				{
+					string screen_name = user.screen_name;
+					DWORD dwNum = MultiByteToWideChar(CP_UTF8,NULL,screen_name.c_str(),-1,NULL,0);
+					WCHAR *psText;
+					psText = new WCHAR[dwNum];
+					if(!psText)
+					{
+						delete []psText;
+					}
+					MultiByteToWideChar (CP_UTF8,NULL,screen_name.c_str(),-1,psText,dwNum);
+
+					CLabelUI *pScreenLabel = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("currentUserScreenName")));
+					if (pScreenLabel)
+					{
+						pScreenLabel->SetText(psText);
+					}
+
+					string profile_image_url = user.profile_image_url;
+
+					CDuiString resPath = m_PaintManager.GetResourcePath();
+
+
+					string picPath(W2A(resPath));
+
+					string relativePath = "Temp//" + uid + ".jpg"; 
+
+					picPath += relativePath;
+
+
+					m_picDownload.SetPicName(picPath);
+					bool bSuccess = m_picDownload.DownloadPic(profile_image_url);
+
+					CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_PaintManager.FindControl(_T("currentUserPic")));
+					if (pUsrPic)
+					{
+						pUsrPic->SetBkImage(A2W(relativePath.c_str()));
+					}
+
+					delete[] psText;
+				}
 			}
 			break;
 		case WBOPT_POST_STATUSES_UPDATE:
@@ -363,12 +464,17 @@ void main_frame::OnWeiboRespComplated( unsigned int optionId, const char* httpHe
 		case WBOPT_GET_REMIND_UNREAD_COUNT:
 			{
 				USES_CONVERSION;
+				CLabelUI *pUnreadTimeline = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
+
 				string strCountUnRead = objPtr->getSubStringByKey("status");
 				int count = atoi(strCountUnRead.c_str());
-				CDuiString strUnRead;
-				strUnRead.Format(_T("%d"),count);
-
-				CLabelUI *pUnreadTimeline = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
+				
+				CDuiString strUnRead(_T(""));
+				if (count > 0)
+				{
+					strUnRead.Format(_T("%d"),count);
+				}
+				
 				if (pUnreadTimeline)
 				{
 					pUnreadTimeline->SetText(strUnRead);
@@ -467,7 +573,9 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		pTimelineList->SetVisible(true);
 	}
 
-	for (int i = pAllNewWeibo->getSubCounts() - 1 ; i >= 0 ; i --)
+	int newWeiboCount = pAllNewWeibo->getSubCounts();
+
+	for (int i = newWeiboCount - 1 ; i >= 0 ; i --)
 	{
 		ParsingObjectPtr pWeibo = pAllNewWeibo->getSubObjectByIndex(i);
 		string strText = pWeibo->getSubStringByKey("text");
@@ -504,7 +612,7 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		psWeiboText = new WCHAR[dwNum];
 		if(!psWeiboText)
 		{
-			delete []psText;
+			delete []psWeiboText;
 		}
 		MultiByteToWideChar (CP_UTF8,NULL,strText.c_str(),-1,psWeiboText,dwNum);
 
@@ -538,6 +646,13 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 			continue;
 		}
 
+		CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("weiboInfo")));
+		if (pWeiboInfo)
+		{
+			pWeiboInfo->SetText(psWeiboText);
+		
+		}
+
 		CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("userLogo")));
 		if (pUsrPic)
 		{
@@ -549,22 +664,40 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		{
 			pUserName->SetText(psText);
 		}
-		CTextUI *pWeiboInfo = static_cast<CTextUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("weiboInfo")));
-		if (pWeiboInfo)
-		{
-			pWeiboInfo->SetText(psWeiboText);
-		}
+		
+		pListContainerUI->SetFixedHeight(150);
 
 		if (pTimelineList)
 		{
 			pTimelineList->AddAt(pListContainerUI,0);
 		}
-		
-		pListContainerUI->SetFixedHeight(150);
 
 		delete []psText;
 		delete []psWeiboText;
 	}
+
+
+	for (size_t i = 0; i < newWeiboCount ; i ++)
+	{
+		CListContainerElementUI *pContainer = static_cast<CListContainerElementUI*>(pTimelineList->GetItemAt(i));
+		CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_PaintManager.FindSubControlByName(pContainer,_T("weiboInfo")));
+		if (pWeiboInfo)
+		{
+// 			DWORD Mask = pWeiboInfo->GetEventMask();
+// 			Mask = Mask | ENM_LINK  | ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS;
+// 			pWeiboInfo->SetEventMask(Mask);
+			pWeiboInfo->SetAutoURLDetect();
+			BOOL bAutoUrlDetect =	pWeiboInfo->GetAutoURLDetect();
+			int a = 0;
+			pWeiboInfo->ShowCaret(false);
+		}
+	}
+
+	
+
+	CLabelUI *pUnReadTimelineCount = static_cast<CLabelUI*>(m_PaintManager.FindControl(_T("unreadTimelineCount")));
+	if (pUnReadTimelineCount)
+		pUnReadTimelineCount->SetText(_T(""));
 }
 
 bool main_frame::OnRefreshUnReadTimeline( void *param )

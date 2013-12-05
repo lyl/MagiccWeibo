@@ -8,7 +8,7 @@
 			<HorizontalLayout>
 				<VerticalLayout>
 					<Label name="userScreenName" font="1" textcolor="#FF000000"></Label>
-					<Text name="weiboInfo"></Text>
+					<RichEdit bordersize="1" name="weiboInfo"></RichEdit>
 				</VerticalLayout>
 				<HorizontalLayout>
 					<Button name="weiboTime" textcolor="#FFDAE9F3"></Button>
