@@ -158,6 +158,7 @@ void main_frame::OnPrepare( TNotifyUI& msg )
 	{
 		pWeiboCotent->OnEvent += MakeDelegate(this,&main_frame::OnWeiboContentEvent);
 		pWeiboCotent->OnNotify += MakeDelegate(this,&main_frame::OnWeiboContentNotify);
+		pWeiboCotent->SetAutoURLDetect();
 	}
 
 	USES_CONVERSION;
@@ -632,15 +633,18 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 
 		CListContainerElementUI *pListContainerUI = NULL;
 
-		if (!m_dlgBuilder.GetMarkup()->IsValid())
-		{
-			pListContainerUI =static_cast<CListContainerElementUI*> (m_dlgBuilder.Create(_T("weibo_info_list.xml"),NULL,NULL,&m_PaintManager,NULL));
-		}
-		else
-		{
-			pListContainerUI = static_cast<CListContainerElementUI*>(m_dlgBuilder.Create(NULL,&m_PaintManager));
-		}
+		CDialogBuilder dlgBuilder;
 
+// 		if (!m_dlgBuilder.GetMarkup()->IsValid())
+// 		{
+			pListContainerUI =static_cast<CListContainerElementUI*> (dlgBuilder.Create(_T("weibo_info_list.xml"),NULL,NULL,&m_PaintManager,NULL));
+// 		}
+// 		else
+// 		{
+// 			pListContainerUI = static_cast<CListContainerElementUI*>(m_dlgBuilder.Create(NULL,&m_PaintManager));
+// 		}
+
+		
 		if (pListContainerUI == NULL)
 		{
 			continue;
@@ -649,8 +653,11 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 		CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("weiboInfo")));
 		if (pWeiboInfo)
 		{
+			
+			//pWeiboInfo->SetText(psWeiboText);
+			//pWeiboInfo->SetAutoURLDetect();
 			pWeiboInfo->SetText(psWeiboText);
-		
+
 		}
 
 		CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_PaintManager.FindSubControlByName(pListContainerUI,_T("userLogo")));
@@ -665,6 +672,7 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 			pUserName->SetText(psText);
 		}
 		
+		
 		pListContainerUI->SetFixedHeight(150);
 
 		if (pTimelineList)
@@ -672,26 +680,25 @@ void main_frame::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 			pTimelineList->AddAt(pListContainerUI,0);
 		}
 
+		
+
 		delete []psText;
 		delete []psWeiboText;
 	}
 
-
-	for (size_t i = 0; i < newWeiboCount ; i ++)
-	{
-		CListContainerElementUI *pContainer = static_cast<CListContainerElementUI*>(pTimelineList->GetItemAt(i));
-		CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_PaintManager.FindSubControlByName(pContainer,_T("weiboInfo")));
-		if (pWeiboInfo)
-		{
-// 			DWORD Mask = pWeiboInfo->GetEventMask();
-// 			Mask = Mask | ENM_LINK  | ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS;
-// 			pWeiboInfo->SetEventMask(Mask);
-			pWeiboInfo->SetAutoURLDetect();
-			BOOL bAutoUrlDetect =	pWeiboInfo->GetAutoURLDetect();
-			int a = 0;
-			pWeiboInfo->ShowCaret(false);
-		}
-	}
+ 
+//  	for (size_t i = 0; i < newWeiboCount ; i ++)
+//  	{
+//  		CListContainerElementUI *pContainer = static_cast<CListContainerElementUI*>(pTimelineList->GetItemAt(i));
+//  		CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_PaintManager.FindSubControlByName(pContainer,_T("weiboInfo")));
+//  		if (pWeiboInfo)
+//  		{
+//  // 			DWORD Mask = pWeiboInfo->GetEventMask();
+//  // 			Mask = Mask | ENM_LINK  | ENM_MOUSEEVENTS | ENM_SCROLLEVENTS | ENM_KEYEVENTS;
+//  // 			pWeiboInfo->SetEventMask(Mask);
+//  			pWeiboInfo->SetAutoURLDetect();
+//  		}
+//  	}
 
 	
 

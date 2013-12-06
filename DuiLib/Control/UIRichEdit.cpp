@@ -127,6 +127,8 @@ public:
     virtual HRESULT TxGetSelectionBarWidth (LONG *lSelBarWidth);
 
 private:
+
+	HMODULE m_hmod;
     CRichEditUI *m_re;
     ULONG	cRefs;					// Reference Count
     ITextServices	*pserv;		    // pointer to Text Services object
@@ -247,8 +249,16 @@ CTxtWinHost::CTxtWinHost() : m_re(NULL)
 
 CTxtWinHost::~CTxtWinHost()
 {
-    pserv->OnTxInPlaceDeactivate();
-    pserv->Release();
+	if (pserv)
+	{
+		pserv->OnTxInPlaceDeactivate();
+		pserv->Release();
+	}
+	if (m_hmod)
+	{
+		FreeLibrary(m_hmod);
+	}
+    
 }
 
 ////////////////////// Create/Init/Destruct Commands ///////////////////////
@@ -304,16 +314,26 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     //    goto err;
 
 	PCreateTextServices TextServicesProc;
-	HMODULE hmod = LoadLibrary(_T("msftedit.dll"));
-	if (hmod)
+	m_hmod = LoadLibrary(_T("msftedit.dll"));//RICHED20.dll;msftedit.dll
+	if (m_hmod)
 	{
-		TextServicesProc = (PCreateTextServices)GetProcAddress(hmod,"CreateTextServices");
+		TextServicesProc = (PCreateTextServices)GetProcAddress(m_hmod,"CreateTextServices");
 	}
+
+
 
 	if (TextServicesProc)
 	{
 		HRESULT hr = TextServicesProc(NULL, this, &pUnk);
+		if(FAILED(hr))
+		{
+			int error = GetLastError();
+			int a = 0;
+			goto err;
+		}
 	}
+
+	
 
     hr = pUnk->QueryInterface(IID_ITextServices,(void **)&pserv);
 
@@ -326,12 +346,24 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
         goto err;
     }
 
+	LRESULT lResult;
+
+	pserv->TxSendMessage(EM_AUTOURLDETECT,1,0,&lResult);
+
     // Set window text
     if(pcs && pcs->lpszName)
     {
 #ifdef _UNICODE		
-        if(FAILED(pserv->TxSetText((TCHAR *)pcs->lpszName)))
-            goto err;
+
+		CHARRANGE cr;
+		cr.cpMin = 0;
+		cr.cpMax = -1;
+		pserv->TxSendMessage(EM_EXSETSEL, 0, (LPARAM)&cr, &lResult);
+			
+		pserv->TxSendMessage(EM_REPLACESEL, (WPARAM) 0, (LPARAM)pcs->lpszName, 0); 
+// 
+//         if(FAILED(pserv->TxSetText((TCHAR *)pcs->lpszName)))
+//             goto err;
 #else
         size_t iLen = _tcslen(pcs->lpszName);
         LPWSTR lpText = new WCHAR[iLen + 1];
