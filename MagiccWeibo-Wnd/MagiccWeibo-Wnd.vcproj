@@ -171,7 +171,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="源文件"
+			Name="Source Files"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
@@ -185,18 +185,6 @@
 			</File>
 			<File
 				RelativePath=".\main_frame.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ParsingDataStruct.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PicDownloadManage.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RichEditUIEx.cpp"
 				>
 			</File>
 			<File
@@ -219,9 +207,41 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="Controls"
+				>
+				<File
+					RelativePath=".\RichEditUIEx.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Manage"
+				>
+				<File
+					RelativePath=".\LayoutManage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PicDownloadManage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\WeiboManage.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Util"
+				>
+				<File
+					RelativePath=".\ParsingDataStruct.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="头文件"
+			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
@@ -242,23 +262,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ParsingDataStruct.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ParsingDefine.hxx"
-				>
-			</File>
-			<File
-				RelativePath=".\PicDownloadManage.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RichEditUIEx.h"
 				>
 			</File>
 			<File
@@ -269,9 +273,45 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
+			<Filter
+				Name="Controls"
+				>
+				<File
+					RelativePath=".\RichEditUIEx.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Manage"
+				>
+				<File
+					RelativePath=".\LayoutManage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PicDownloadManage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\WeiboManage.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Util"
+				>
+				<File
+					RelativePath=".\ParsingDataStruct.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ParsingDefine.hxx"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="资源文件"
+			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
@@ -289,7 +329,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="窗体布局"
+			Name="Layout"
 			>
 			<File
 				RelativePath="..\bin\skin\Magicc\main_frame.xml"

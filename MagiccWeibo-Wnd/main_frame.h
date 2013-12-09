@@ -1,23 +1,11 @@
 #pragma once
 
-#include <IWeibo.hxx>
-#include <IWeiboMethod.hxx>
-#include <util/threading/Lock.hxx>
-#include <IWeiboDef.hxx>
-#include <IWeiboMethod.hxx>
-#include <ParsingObject.hxx>
-#include "ParsingDefine.hxx"
-#include "ParsingDataStruct.h"
-#include <util/threading/Lock.hxx>
-#include "PicDownloadManage.h"
-using namespace weibo;
 
-#define APP_KEY "397065771"
-#define APP_SECRET "8b1a204835edfbde7e933a48b24cd79b"
-#define REDIRECT_URL "http://www.baidu.com"
+#include "WeiboManage.h"
+#include "LayoutManage.h"
 
 class CMagiccWebBrowserEventHandler;
-class CPicDownloadManage;
+class CWeiboManage;
 class main_frame : public WindowImplBase
 {
 public:
@@ -52,27 +40,20 @@ public:
 	void OnAuthSuccess(VARIANT *&url);
 	void OnAuthSuccess(CDuiString &strUrl);
 
-	void OnWeiboRespComplated(unsigned int optionId, const char* httpHeader, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask);
-
-	void OnWeiboRespErrored(unsigned int optionId, const int errCode, const int errSubCode, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask);
-
-	void OnWeiboRespStoped(unsigned int optionId, const weibo::UserTaskInfo* pTask);
-
 protected:	
 
 	void Notify(TNotifyUI& msg);
 	void OnPrepare(TNotifyUI& msg);
 	void OnExit(TNotifyUI& msg);
 	void OnTimer(TNotifyUI& msg);
-	void RefreshTimeline(ParsingObjectPtr &parsingObjPtr);
+	
 private:
-	string m_strUid;
+
 	CMagiccWebBrowserEventHandler*	m_pWebBrowserEventHander;
-	boost::shared_ptr<weibo::IWeibo> m_weiboPtr;
+	
+	CWeiboManage m_weiboManage;
+	CLayoutManage m_layoutManage;
 
 	CDialogBuilder m_dlgBuilder;
 
-	CPicDownloadManage m_picDownload;
-
-	INT64 m_lastWeiboId;
 };
