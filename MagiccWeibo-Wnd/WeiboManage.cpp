@@ -15,6 +15,9 @@ CWeiboManage::~CWeiboManage(void)
 
 void CWeiboManage::OnWeiboRespComplated( unsigned int optionId, const char* httpHeader, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask )
 {
+
+	Util::Lock lock(mutex);
+
 	if (result)
 	{
 		USES_CONVERSION;
@@ -124,6 +127,7 @@ void CWeiboManage::OnWeiboRespStoped( unsigned int optionId, const weibo::UserTa
 
 void CWeiboManage::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 {
+
  	USES_CONVERSION;
  	ParsingObjectPtr pAllNewWeibo = parsingObjPtr->getSubObjectByKey("statuses");
  

@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Users\haily\Documents\dui\MagiccWeibo\third-party\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\third-party\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,10 +62,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib"
+				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib ../Lib/libutil_VC90.lib"
 				OutputFile="../bin/MagiccWeibo.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)\$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -176,6 +177,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DownloadEngine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MagiccWebBrowserEventHandler.cpp"
 				>
 			</File>
@@ -245,6 +250,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\DownloadEngine.h"
+				>
+			</File>
 			<File
 				RelativePath=".\MagiccWebBrowserEventHandler.h"
 				>

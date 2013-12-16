@@ -18,18 +18,13 @@ bool CPicDownloadManage::StartUp()
 		return false;
 	}
 
-	m_pCurl = curl_easy_init();
-	if (NULL == m_pCurl)
-	{
-		curl_global_cleanup();
-		return false;
-	}
+	
 
 }
 
 bool CPicDownloadManage::ShutDown()
 {
-	curl_easy_cleanup(m_pCurl);
+	
 	curl_global_cleanup();
 	return true;
 }
@@ -57,17 +52,25 @@ bool  CPicDownloadManage::DownloadPic( string &strUrl )
 	{
 		return false;
 	}
-	
+	m_pCurl = curl_easy_init();
+	if (NULL == m_pCurl)
+	{
+		curl_global_cleanup();
+		return false;
+	}
 	curl_easy_setopt(m_pCurl,CURLOPT_URL,strUrl.c_str());
 	curl_easy_setopt(m_pCurl,CURLOPT_WRITEFUNCTION,&CPicDownloadManage::WriteFun);
 	curl_easy_setopt(m_pCurl,CURLOPT_WRITEDATA,fp);
+	curl_easy_setopt(m_pCurl,CURLOPT_TIMEOUT,5);
 
 	CURLcode retn = curl_easy_perform(m_pCurl);
 	if (retn != CURLE_OK)
 	{
+		curl_easy_cleanup(m_pCurl);
 		fclose(fp);
 		return false;
 	}
+	curl_easy_cleanup(m_pCurl);
 	fclose(fp);
 
 	return true;

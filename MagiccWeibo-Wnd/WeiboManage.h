@@ -64,4 +64,6 @@ private:
 
 	string m_strUid;
 	string m_accessToken;
+
+	Util::Mutex mutex;
 };

@@ -179,6 +179,7 @@ void main_frame::OnPrepare( TNotifyUI& msg )
 	if (pUnreadTimeline)
 	{
 		pUnreadTimeline->OnEvent += MakeDelegate(this,&main_frame::OnRefreshUnReadTimeline);
+		m_PaintManager.SetTimer(pUnreadTimeline,1,1000*10);
 	}
 
 }
@@ -384,5 +385,12 @@ void main_frame::OnAuthSuccess( CDuiString &strUrl )
 		
 bool main_frame::OnRefreshUnReadTimeline( void *param )
 {
-	return m_weiboManage.GetRemindUnreadCount();
+	TEventUI *pNotify = (TEventUI *)param;
+	if (pNotify->Type == UIEVENT_TIMER)
+	{
+		return m_weiboManage.GetRemindUnreadCount();
+	}
+
+	return false;
+
 }

@@ -3,11 +3,14 @@
 #include <memory>
 #include <functional>
 #include <xmemory>
+#include <string>
+#include <regex>
 
 using namespace std::tr1;
 using namespace std::tr1::placeholders;
 using std::tr1::function;
 using std::tr1::bind;
+using std::tr1::regex;
 
 CLayoutManage::CLayoutManage(void)
 {
@@ -74,10 +77,97 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 		return;
 	}
 
-	CRichEditUI *pWeiboInfo = static_cast<CRichEditUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("weiboInfo")));
+	CTextUI *pWeiboInfo = static_cast<CTextUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("weiboInfo")));
 	if (pWeiboInfo)
 	{
-		pWeiboInfo->SetText(strWeibo);
+		wstring strWeiboText(strWeibo);
+
+		struct httpPos
+		{
+			int startpos;
+			int endpos;
+		};
+
+		std::vector<httpPos> httpList;
+		wstring rex(_T("http://t.cn/[a-zA-Z0-9]+"));
+		std::tr1::wsmatch  res;  
+		std::tr1::wregex rx(rex.c_str());
+
+		std::wstring::const_iterator itS = strWeiboText.begin();// not include the date prefix
+		std::wstring::const_iterator itE = strWeiboText.end();
+
+		if (std::tr1::regex_search(itS , itE , res, rx))
+		{
+			for (size_t i = 0; i < res.size() ; i ++)
+			{
+				httpPos pos;
+				pos.startpos = res.position(i);
+				pos.endpos = res.position(i) + res.length(i);
+				httpList.push_back(pos);
+			}
+		}
+
+		for (int i = httpList.size() - 1 ; i >= 0 ; i --)
+		{
+			strWeiboText.insert(httpList[i].endpos,_T("{/a}"));
+			strWeiboText.insert(httpList[i].startpos,_T("{a noUnderline}"));
+		}
+
+		int atPos = strWeiboText.find('@');
+		while (atPos != -1)
+		{
+			int spacePos = strWeiboText.find(' ',atPos + 1);
+			int colonPos =	strWeiboText.find(':',atPos + 1);
+			int endPos = 0;
+			if (colonPos != -1 && spacePos != -1)
+			{
+				if (spacePos < colonPos && (spacePos - atPos) <= 10)
+				{
+					strWeiboText.insert(spacePos,_T("{/a}"));
+					strWeiboText.insert(atPos,_T("{a noUnderline}"));
+					endPos = spacePos + 20;
+				}
+				else if (colonPos<spacePos && (colonPos - atPos) <= 10)
+				{
+					strWeiboText.insert(colonPos,_T("{/a}"));
+					strWeiboText.insert(atPos,_T("{a noUnderline}"));
+			
+					endPos = colonPos + 20;
+				}
+			}
+			else if (colonPos == -1 && spacePos != -1 && (spacePos - atPos) <= 24)
+			{
+				strWeiboText.insert(spacePos,_T("{/a}"));
+				strWeiboText.insert(atPos,_T("{a noUnderline}"));
+		
+				endPos = spacePos + 20;
+			}
+			else if (spacePos == -1 && colonPos != -1 && (colonPos - atPos) <= 10)
+			{
+				strWeiboText.insert(colonPos,_T("{/a}"));
+				strWeiboText.insert(atPos,_T("{a noUnderline}"));
+
+				endPos = colonPos + 20;
+			}
+			else
+				break;
+
+			atPos = strWeiboText.find('@',endPos + 1);
+		}
+
+		int firstTopicSep = strWeiboText.find('#');
+		while (firstTopicSep != -1)
+		{
+			int secondTopicPos = strWeiboText.find('#',firstTopicSep + 1);
+			if (secondTopicPos != -1)
+			{
+				strWeiboText.insert(secondTopicPos+2,_T("{/a}"));
+				strWeiboText.insert(firstTopicSep,_T("{a noUnderline}"));
+			}
+			firstTopicSep = strWeiboText.find('#',secondTopicPos + 20);
+		}
+
+		pWeiboInfo->SetText(strWeiboText.c_str());
 	}
 
 	CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("userLogo")));
@@ -98,53 +188,5 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	{
 		pTimelineList->AddAt(pListContainerUI,0);
 	}
-
-// 	std::tr1::function<void(int,int)> funSetUrl = [&](int startPos,int endPos){
-// 		pWeiboInfo->SetSel(startPos,endPos);
-// 		CHARFORMAT2   cf; 
-// 		ZeroMemory(&cf, sizeof(CHARFORMAT2));
-// 		cf.cbSize = sizeof(CHARFORMAT2); 
-// 		cf.dwMask = CFM_LINK; 
-// 		cf.dwEffects |= CFE_LINK; 
-// 		pWeiboInfo->SetSelectionCharFormat(cf);
-// 		pWeiboInfo->SetSel(0,0);
-// 	};
-
-	CDuiString strWeiboText(strWeibo);
-	int atPos = strWeiboText.Find('@');
-	while (atPos != -1)
-	{
-		int colonPos =	strWeiboText.Find(':',atPos + 1);
-		if (colonPos != -1)
-		{
-			pWeiboInfo->SetSel(atPos,colonPos);
-			CHARFORMAT2   cf; 
-			ZeroMemory(&cf, sizeof(CHARFORMAT2));
-			cf.cbSize = sizeof(CHARFORMAT2); 
-			cf.dwMask = CFM_LINK; 
-			cf.dwEffects |= CFE_LINK;
-
-			pWeiboInfo->SetSelectionCharFormat(cf);
-			pWeiboInfo->SetSel(0,0);
-		}
-		atPos = strWeiboText.Find('@',colonPos + 1);
-	}
-
-	int firstTopicSep = strWeiboText.Find('#');
-	while (firstTopicSep != -1)
-	{
-		int secondTopicPos = strWeiboText.Find('#',firstTopicSep + 1);
-		if (secondTopicPos != -1)
-		{
-			pWeiboInfo->SetSel(firstTopicSep,secondTopicPos);
-			CHARFORMAT2   cf; 
-			ZeroMemory(&cf, sizeof(CHARFORMAT2));
-			cf.cbSize = sizeof(CHARFORMAT2); 
-			cf.dwMask = CFM_LINK; 
-			cf.dwEffects |= CFE_LINK; 
-			pWeiboInfo->SetSelectionCharFormat(cf);
-			pWeiboInfo->SetSel(0,0);
-		}
-		firstTopicSep = strWeiboText.Find('#',secondTopicPos + 1);
-	}
+	
 }
