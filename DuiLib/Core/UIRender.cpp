@@ -1368,6 +1368,20 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         }
                     }
 
+					CDuiString sLinkAttr;
+					LPCTSTR pstrTemp = pstrText;
+					while( *pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') ) {
+						pstrTemp = ::CharNext(pstrText);
+						while( pstrText < pstrTemp) {
+							sLinkAttr += *pstrText++;
+						}
+					}
+					bool bUnderline = true;
+					if (sLinkAttr.Find(_T("noUnderline"))>=0)
+					{
+						bUnderline = false;
+					}
+
                     DWORD clrColor = pManager->GetDefaultLinkFontColor();
                     if( bHoverLink && iLinkIndex < nLinkRects ) {
                         CDuiString *pStr = (CDuiString*)(sLinks + iLinkIndex);
@@ -1382,7 +1396,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     TFontInfo* pFontInfo = pManager->GetDefaultFontInfo();
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
-                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+                        HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, bUnderline, pFontInfo->bItalic);
                         if( hFont == NULL ) hFont = pManager->AddFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
                         pFontInfo = pManager->GetFontInfo(hFont);
                         aFontArray.Add(pFontInfo);

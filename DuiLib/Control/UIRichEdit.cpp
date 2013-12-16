@@ -240,7 +240,7 @@ HRESULT CreateHost(CRichEditUI *re, const CREATESTRUCT *pcs, CTxtWinHost **pptec
     return TRUE;
 }
 
-CTxtWinHost::CTxtWinHost() : m_re(NULL)
+CTxtWinHost::CTxtWinHost() : m_re(NULL),pserv(NULL)
 {
     ::ZeroMemory(&cRefs, sizeof(CTxtWinHost) - offsetof(CTxtWinHost, cRefs));
     cchTextMost = cInitTextMax;
@@ -948,7 +948,7 @@ BOOL CTxtWinHost::DoSetCursor(RECT *prc, POINT *pt)
     RECT rc = prc ? *prc : rcClient;
 
     // Is this in our rectangle?
-    if (PtInRect(&rc, *pt))
+    if (PtInRect(&rc, *pt) && pserv)
     {
         RECT *prcClient = (!fInplaceActive || prc) ? &rc : NULL;
         pserv->OnTxSetCursor(DVASPECT_CONTENT,	-1, NULL, NULL,  m_re->GetManager()->GetPaintDC(),
