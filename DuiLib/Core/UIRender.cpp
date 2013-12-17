@@ -1368,19 +1368,19 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         }
                     }
 
-					CDuiString sLinkAttr;
-					LPCTSTR pstrTemp = pstrText;
-					while( *pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') ) {
-						pstrTemp = ::CharNext(pstrText);
-						while( pstrText < pstrTemp) {
-							sLinkAttr += *pstrText++;
-						}
-					}
-					bool bUnderline = true;
-					if (sLinkAttr.Find(_T("noUnderline"))>=0)
-					{
-						bUnderline = false;
-					}
+// 					CDuiString sLinkAttr;
+// 					LPCTSTR pstrTemp = pstrText;
+// 					while( *pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') ) {
+// 						pstrTemp = ::CharNext(pstrText);
+// 						while( pstrText < pstrTemp) {
+// 							sLinkAttr += *pstrText++;
+// 						}
+// 					}
+					bool bUnderline = false;
+// 					if (sLinkAttr.Find(_T("noUnderline"))>=0)
+// 					{
+// 						bUnderline = false;
+// 					}
 
                     DWORD clrColor = pManager->GetDefaultLinkFontColor();
                     if( bHoverLink && iLinkIndex < nLinkRects ) {
