@@ -11,9 +11,9 @@ public:
 public:
 	void SetPaintManage(DuiLib::CPaintManagerUI *pManage);
 	
-	void UpdateUserProfile(LPCTSTR _name,LPCTSTR _picPath);
+	void UpdateUserProfile(LPCTSTR _name,LPCSTR _picPath,LPCSTR _picUrl);
 	void UpdateUnread(int count);
-	void UpdateTimelineList(INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,LPCTSTR userPicPath);
+	void UpdateTimelineList(INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,LPCSTR userPicPath,LPCSTR _picUrl);
 private:
 	DuiLib::CPaintManagerUI *m_pPaintManage;
 };

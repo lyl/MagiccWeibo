@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "LayoutManage.h"
+#include "PicDownloadManage.h"
 #include <memory>
 #include <functional>
 #include <xmemory>
@@ -26,7 +27,7 @@ void CLayoutManage::SetPaintManage( DuiLib::CPaintManagerUI *pManage )
 }
 
 
-void CLayoutManage::UpdateUserProfile( LPCTSTR _name,LPCTSTR _picPath )
+void CLayoutManage::UpdateUserProfile( LPCTSTR _name,LPCSTR _picPath ,LPCSTR _picUrl)
 {
 	CLabelUI *pScreenLabel = static_cast<CLabelUI*>(m_pPaintManage->FindControl(_T("currentUserScreenName")));
 	if (pScreenLabel)
@@ -37,7 +38,7 @@ void CLayoutManage::UpdateUserProfile( LPCTSTR _name,LPCTSTR _picPath )
 	CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_pPaintManage->FindControl(_T("currentUserPic")));
 	if (pUsrPic)
 	{
-		pUsrPic->SetBkImage(_picPath);
+		CPicDownloadManage::Instance()->AddDownloadTask(string(_picPath),string(_picUrl),pUsrPic);
 	}
 
 }
@@ -57,7 +58,7 @@ void CLayoutManage::UpdateUnread( int count )
 	}
 }
 
-void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,LPCTSTR strUserPicPath )
+void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,LPCSTR strUserPicPath ,LPCSTR _picUrl)
 {
 
 	CListUI *pTimelineList = static_cast<CListUI*>(m_pPaintManage->FindControl(_T("timelineList")));
@@ -82,13 +83,14 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	{
 		wstring strWeiboText(strWeibo);
 
-		struct httpPos
+		struct linkPos
 		{
 			int startpos;
 			int endpos;
+			wstring slink;
 		};
 
-		std::vector<httpPos> httpList;
+		std::vector<linkPos> linkList;
 		wstring rex(_T("http://t.cn/[a-zA-Z0-9]+"));
 		std::tr1::wsmatch  res;  
 		std::tr1::wregex rx(rex.c_str());
@@ -100,18 +102,24 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 		{
 			for (size_t i = 0; i < res.size() ; i ++)
 			{
-				httpPos pos;
+				linkPos pos;
 				pos.startpos = res.position(i);
 				pos.endpos = res.position(i) + res.length(i);
-				httpList.push_back(pos);
+				pos.slink = res.str(i);
+				linkList.push_back(pos);
 			}
 		}
 
-		for (int i = httpList.size() - 1 ; i >= 0 ; i --)
+		for (int i = linkList.size() - 1 ; i >= 0 ; i --)
 		{
-			strWeiboText.insert(httpList[i].endpos,_T("{/a}"));
-			strWeiboText.insert(httpList[i].startpos,_T("{a noUnderline}"));
+			strWeiboText.insert(linkList[i].endpos,_T("{/a}"));
+			wstring stemp = _T("{a ");
+			stemp.append(linkList[i].slink);
+			stemp.append(_T("}"));
+			strWeiboText.insert(linkList[i].startpos,stemp);
 		}
+
+		linkList.clear();
 
 		int atPos = strWeiboText.find('@');
 		while (atPos != -1)
@@ -123,31 +131,50 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 			{
 				if (spacePos < colonPos && (spacePos - atPos) <= 10)
 				{
-					strWeiboText.insert(spacePos,_T("{/a}"));
-					strWeiboText.insert(atPos,_T("{a noUnderline}"));
-					endPos = spacePos + 20;
+					linkPos pos;
+					pos.startpos = atPos;
+					pos.endpos = spacePos;
+					pos.slink = strWeiboText.substr(atPos,spacePos - atPos);
+
+					linkList.push_back(pos);
+
+					endPos = spacePos;
 				}
 				else if (colonPos<spacePos && (colonPos - atPos) <= 10)
 				{
-					strWeiboText.insert(colonPos,_T("{/a}"));
-					strWeiboText.insert(atPos,_T("{a noUnderline}"));
-			
-					endPos = colonPos + 20;
+
+					linkPos pos;
+					pos.startpos = atPos;
+					pos.endpos = colonPos;
+					pos.slink = strWeiboText.substr(atPos,colonPos - atPos);
+
+					linkList.push_back(pos);
+
+					endPos = colonPos;
 				}
 			}
 			else if (colonPos == -1 && spacePos != -1 && (spacePos - atPos) <= 24)
 			{
-				strWeiboText.insert(spacePos,_T("{/a}"));
-				strWeiboText.insert(atPos,_T("{a noUnderline}"));
-		
-				endPos = spacePos + 20;
+
+				linkPos pos;
+				pos.startpos = atPos;
+				pos.endpos = spacePos;
+				pos.slink = strWeiboText.substr(atPos,spacePos - atPos);
+
+				linkList.push_back(pos);
+
+				endPos = spacePos;
 			}
 			else if (spacePos == -1 && colonPos != -1 && (colonPos - atPos) <= 10)
 			{
-				strWeiboText.insert(colonPos,_T("{/a}"));
-				strWeiboText.insert(atPos,_T("{a noUnderline}"));
+				linkPos pos;
+				pos.startpos = atPos;
+				pos.endpos = colonPos;
+				pos.slink = strWeiboText.substr(atPos,colonPos - atPos);
 
-				endPos = colonPos + 20;
+				linkList.push_back(pos);
+
+				endPos = colonPos;
 			}
 			else
 				break;
@@ -155,16 +182,39 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 			atPos = strWeiboText.find('@',endPos + 1);
 		}
 
+		for (int i = linkList.size() - 1 ; i >= 0 ; i --)
+		{
+			strWeiboText.insert(linkList[i].endpos,_T("{/a}"));
+			wstring stemp = _T("{a ");
+			stemp.append(linkList[i].slink);
+			stemp.append(_T("}"));
+			strWeiboText.insert(linkList[i].startpos,stemp);
+		}
+
+		linkList.clear();
+
 		int firstTopicSep = strWeiboText.find('#');
 		while (firstTopicSep != -1)
 		{
 			int secondTopicPos = strWeiboText.find('#',firstTopicSep + 1);
 			if (secondTopicPos != -1)
 			{
-				strWeiboText.insert(secondTopicPos+2,_T("{/a}"));
-				strWeiboText.insert(firstTopicSep,_T("{a noUnderline}"));
+				linkPos pos;
+				pos.startpos = firstTopicSep;
+				pos.endpos = secondTopicPos + 1;
+				pos.slink = strWeiboText.substr(firstTopicSep,secondTopicPos - firstTopicSep + 1);
+				linkList.push_back(pos);
 			}
-			firstTopicSep = strWeiboText.find('#',secondTopicPos + 20);
+			firstTopicSep = strWeiboText.find('#',secondTopicPos+2);
+		}
+
+		for (int i = linkList.size() - 1 ; i >= 0 ; i --)
+		{
+			strWeiboText.insert(linkList[i].endpos,_T("{/a}"));
+			wstring stemp = _T("{a ");
+			stemp.append(linkList[i].slink);
+			stemp.append(_T("}"));
+			strWeiboText.insert(linkList[i].startpos,stemp);
 		}
 
 		pWeiboInfo->SetText(strWeiboText.c_str());
@@ -173,7 +223,7 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("userLogo")));
 	if (pUsrPic)
 	{
-		pUsrPic->SetBkImage(strUserPicPath);
+		CPicDownloadManage::Instance()->AddDownloadTask(string(strUserPicPath),string(_picUrl),pUsrPic);
 	}
 
 	CLabelUI *pUserName = static_cast<CLabelUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("userScreenName")));
@@ -188,5 +238,12 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	{
 		pTimelineList->AddAt(pListContainerUI,0);
 	}
+
+// 	if (pWeiboInfo)
+// 	{
+// 		RECT rcContent = pWeiboInfo->EstimateSize();
+// 		RECT rcName = pUserName->GetPos();
+// 		pListContainerUI->SetFixedHeight(abs(rcName.bottom - rcName.top) + abs(rcContent.bottom - rcContent.top));
+// 	}
 	
 }

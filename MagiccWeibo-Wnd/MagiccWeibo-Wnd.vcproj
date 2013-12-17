@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib ../Lib/libutil_VC90.lib"
+				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib ../Lib/libutil_VC90.lib WS2_32.lib Wldap32.lib"
 				OutputFile="../bin/MagiccWeibo.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -177,10 +177,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DownloadEngine.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\MagiccWebBrowserEventHandler.cpp"
 				>
 			</File>
@@ -244,16 +240,28 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="HttpEngine"
+				>
+				<File
+					RelativePath=".\DownloadEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DownloadPicTask.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpTask.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\DownloadEngine.h"
-				>
-			</File>
 			<File
 				RelativePath=".\MagiccWebBrowserEventHandler.h"
 				>
@@ -315,6 +323,22 @@
 				</File>
 				<File
 					RelativePath=".\ParsingDefine.hxx"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="HttpEngine"
+				>
+				<File
+					RelativePath=".\DownloadEngine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DownloadPicTask.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpTask.h"
 					>
 				</File>
 			</Filter>

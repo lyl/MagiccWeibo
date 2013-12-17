@@ -1,5 +1,9 @@
 #pragma once
 #include "curl/curl.h"
+#include <util/threading/Lock.hxx>
+#include "DownloadPicTask.h"
+#include "DownloadEngine.h"
+#include <map>
 
 class CPicDownloadManage
 {
@@ -12,13 +16,17 @@ public:
 	bool ShutDown();
 
 public:
-	void  SetPicName(string name);
-	bool  DownloadPic(string &strUrl);
+	void	AddDownloadTask(string strPicName,string strUrl,CControlUI *pControl);
 
 public:
-	static size_t WriteFun( void *ptr, size_t size, size_t nmemb, void *data);
+	void	TaskComplete(int key);
+
+	static  CPicDownloadManage* Instance();
+	static void ReleaseInstance();
 
 private:
-	CURL *m_pCurl;
-	string m_strPicName;
+	static CPicDownloadManage *m_pInstance;
+	Util::Mutex m_taskListMutex;
+	std::map<int,HttpTaskPtr> m_taskList;
+	CDownloadEngine *m_downloadEngine;
 };

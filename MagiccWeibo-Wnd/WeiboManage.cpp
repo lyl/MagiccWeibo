@@ -78,10 +78,7 @@ void CWeiboManage::OnWeiboRespComplated( unsigned int optionId, const char* http
 					string relativePath = "Temp//" + uid + ".jpg"; 
 					picPath += relativePath;
 
-					m_picDownload.SetPicName(picPath);
-					bool bSuccess = m_picDownload.DownloadPic(profile_image_url);
-
-					UpdateUserProfile(psText,A2W(relativePath.c_str()));
+					UpdateUserProfile(psText,picPath.c_str(),profile_image_url.c_str());
 
 					delete[] psText;
 				}
@@ -184,10 +181,8 @@ void CWeiboManage::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
  		string relativePath = "Temp//" + uid + ".jpg"; 
  		picPath += relativePath;
  
- 		m_picDownload.SetPicName(picPath);
- 		bool bSuccess = m_picDownload.DownloadPic(profile_image_url);
 
-		UpdateTimelineList(m_lastWeiboId,psText,psWeiboText,A2W(relativePath.c_str()));
+		UpdateTimelineList(m_lastWeiboId,psText,psWeiboText,picPath.c_str(),profile_image_url.c_str());
 
 
 

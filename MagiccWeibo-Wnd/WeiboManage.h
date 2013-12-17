@@ -8,7 +8,7 @@
 #include <ParsingObject.hxx>
 #include "ParsingDefine.hxx"
 #include "ParsingDataStruct.h"
-#include <util/threading/Lock.hxx>
+
 #include "PicDownloadManage.h"
 #include <memory>
 #include <functional>
@@ -48,9 +48,9 @@ public:
 	void OnWeiboRespStoped(unsigned int optionId, const weibo::UserTaskInfo* pTask);
 
 public:
-	std::tr1::function<void(LPCTSTR,LPCTSTR)> UpdateUserProfile;
+	std::tr1::function<void(LPCTSTR,LPCSTR,LPCSTR)> UpdateUserProfile;
 	std::tr1::function<void(int)> UpdateUnread;
-	std::tr1::function<void(INT64,LPCTSTR,LPCTSTR,LPCTSTR)> UpdateTimelineList;
+	std::tr1::function<void(INT64,LPCTSTR,LPCTSTR,LPCSTR,LPCSTR)> UpdateTimelineList;
 
 protected:
 	void RefreshTimeline(ParsingObjectPtr &parsingObjPtr);
