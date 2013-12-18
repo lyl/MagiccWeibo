@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "PicDownloadManage.h"
+
 using namespace std::tr1::placeholders;
 
 static CPicDownloadManage* m_pInstace = NULL;
@@ -17,13 +18,17 @@ bool CPicDownloadManage::StartUp()
 	m_downloadEngine = new CDownloadEngine;
 	m_downloadEngine->Run();	
 
+	SECURITY_ATTRIBUTES sa;
+	ZeroMemory(&sa,sizeof(SECURITY_ATTRIBUTES));
+	m_taskMutex = ::CreateMutex(&sa,false,_T("TaskMutex"));
+	srand((unsigned int)time(NULL));
 	return true;
 }
 
 bool CPicDownloadManage::ShutDown()
 {
 	m_downloadEngine->Shutdown();
-	
+	CloseHandle(m_taskMutex);
 	return true;
 }
 // 
@@ -79,22 +84,34 @@ bool CPicDownloadManage::ShutDown()
 
 void CPicDownloadManage::AddDownloadTask( string strPicName,string strUrl,CControlUI *pControl )
 {
-	srand((unsigned int)time(NULL));
+	WaitForSingleObject(m_taskMutex,INFINITE);
+	static int count = 0;
 	int key = rand();
+
+#ifdef _DEBUG
+	CDuiString str;
+	str.Format(_T("下载任务：%d,key : %d\n"),++ count,key);
+	OutputDebugString(str);
+#endif	
+
 	HttpTaskPtr task(new CDownloadPicTask(strUrl,key,strPicName));
 	task->CompleteCallback = std::tr1::bind(&CPicDownloadManage::TaskComplete,this,_1);
 	task->SetData(pControl);
-	{
-		Util::Lock lock(m_taskListMutex);
-		m_taskList.insert(std::make_pair(key,task));
-	}
-	m_downloadEngine->AddTask(task);
+	m_taskList.insert(std::make_pair(key,task));
 
+#ifdef _DEBUG
+	str.Format(_T("任务列表个数：%d\n"),m_taskList.size());
+	OutputDebugString(str);
+#endif
+
+	m_downloadEngine->AddTask(task);
+	ReleaseMutex(m_taskMutex);
 }
 
 void CPicDownloadManage::TaskComplete( int key )
 {
-	Util::Lock lock(m_taskListMutex);
+	WaitForSingleObject(m_taskMutex,INFINITE);
+
 	std::map<int,HttpTaskPtr>::iterator itor = m_taskList.find(key);
 	if (itor != m_taskList.end())
 	{
@@ -103,23 +120,28 @@ void CPicDownloadManage::TaskComplete( int key )
 		{
 			CControlUI *pControl =(CControlUI *) pDownPicTask->GetData();
 			string strPicPath = pDownPicTask->GetPicPath();
-			int pos = strPicPath.find_last_of("Temp");
+			int pos = strPicPath.rfind("Temp");
+		
 			if (pos != -1)
 			{
-				string subStr = strPicPath.substr(pos,strPicPath.length() - pos - 1);
+				int length = strPicPath.length();
+				string subStr = strPicPath.substr(pos,length - pos);
 				USES_CONVERSION;
 				pControl->SetBkImage(A2W(subStr.c_str()));
 			}
 		}
 		m_taskList.erase(itor);
 	}
+	ReleaseMutex(m_taskMutex);
 }
 
 CPicDownloadManage* CPicDownloadManage::Instance()
 {
+	
 	if (NULL == m_pInstace)
 	{
 		m_pInstace = new CPicDownloadManage;
+		m_pInstace->StartUp();
 	}
 
 	return m_pInstace;
@@ -129,6 +151,7 @@ void CPicDownloadManage::ReleaseInstance()
 {
 	if (NULL != m_pInstace)
 	{
+		m_pInstace->ShutDown();
 		delete m_pInstace;
 		m_pInstace = NULL;
 	}

@@ -27,18 +27,18 @@ void CLayoutManage::SetPaintManage( DuiLib::CPaintManagerUI *pManage )
 }
 
 
-void CLayoutManage::UpdateUserProfile( LPCTSTR _name,LPCSTR _picPath ,LPCSTR _picUrl)
+void CLayoutManage::UpdateUserProfile( wstring _name,string _picPath ,string _picUrl)
 {
 	CLabelUI *pScreenLabel = static_cast<CLabelUI*>(m_pPaintManage->FindControl(_T("currentUserScreenName")));
 	if (pScreenLabel)
 	{
-		pScreenLabel->SetText(_name);
+		pScreenLabel->SetText(_name.c_str());
 	}
 	
 	CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_pPaintManage->FindControl(_T("currentUserPic")));
 	if (pUsrPic)
 	{
-		CPicDownloadManage::Instance()->AddDownloadTask(string(_picPath),string(_picUrl),pUsrPic);
+		CPicDownloadManage::Instance()->AddDownloadTask(_picPath,_picUrl,pUsrPic);
 	}
 
 }
@@ -58,7 +58,7 @@ void CLayoutManage::UpdateUnread( int count )
 	}
 }
 
-void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,LPCSTR strUserPicPath ,LPCSTR _picUrl)
+void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWeibo,string strUserPicPath ,string _picUrl)
 {
 
 	CListUI *pTimelineList = static_cast<CListUI*>(m_pPaintManage->FindControl(_T("timelineList")));
@@ -223,7 +223,7 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	CButtonUI *pUsrPic = static_cast<CButtonUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("userLogo")));
 	if (pUsrPic)
 	{
-		CPicDownloadManage::Instance()->AddDownloadTask(string(strUserPicPath),string(_picUrl),pUsrPic);
+		CPicDownloadManage::Instance()->AddDownloadTask(strUserPicPath,_picUrl,pUsrPic);
 	}
 
 	CLabelUI *pUserName = static_cast<CLabelUI*>(m_pPaintManage->FindSubControlByName(pListContainerUI,_T("userScreenName")));

@@ -12,6 +12,7 @@
 #include "PicDownloadManage.h"
 #include <memory>
 #include <functional>
+#include "LayoutManage.h"
 
 using namespace weibo;
 using namespace std::tr1;
@@ -48,9 +49,9 @@ public:
 	void OnWeiboRespStoped(unsigned int optionId, const weibo::UserTaskInfo* pTask);
 
 public:
-	std::tr1::function<void(LPCTSTR,LPCSTR,LPCSTR)> UpdateUserProfile;
+	std::tr1::function<void(wstring,string,string)> UpdateUserProfile;
 	std::tr1::function<void(int)> UpdateUnread;
-	std::tr1::function<void(INT64,LPCTSTR,LPCTSTR,LPCSTR,LPCSTR)> UpdateTimelineList;
+	std::tr1::function<void(INT64,LPCTSTR,LPCTSTR,string,string)> UpdateTimelineList;
 
 protected:
 	void RefreshTimeline(ParsingObjectPtr &parsingObjPtr);
@@ -66,4 +67,7 @@ private:
 	string m_accessToken;
 
 	Util::Mutex mutex;
+public:
+
+	CLayoutManage *m_pLayoutManage;
 };

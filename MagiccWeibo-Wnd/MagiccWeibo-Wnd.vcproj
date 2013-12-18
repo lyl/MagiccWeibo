@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib ../Lib/libutil_VC90.lib WS2_32.lib Wldap32.lib"
+				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/libcurl.lib ../Lib/libutil_VC90.lib WS2_32.lib Wldap32.lib"
 				OutputFile="../bin/MagiccWeibo.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -120,6 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;..\third-party\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -138,7 +139,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="1"
+				AdditionalDependencies="../Lib/WeiboSDK_VC90.lib ../Lib/curllib_7.21.1_VC90.lib ../Lib/libutil_VC90.lib WS2_32.lib Wldap32.lib"
+				OutputFile="../bin/MagiccWeibo.exe"
+				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

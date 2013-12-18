@@ -1,6 +1,5 @@
 #pragma once
 #include "curl/curl.h"
-#include <util/threading/Lock.hxx>
 #include "DownloadPicTask.h"
 #include "DownloadEngine.h"
 #include <map>
@@ -26,7 +25,7 @@ public:
 
 private:
 	static CPicDownloadManage *m_pInstance;
-	Util::Mutex m_taskListMutex;
 	std::map<int,HttpTaskPtr> m_taskList;
 	CDownloadEngine *m_downloadEngine;
+	HANDLE m_taskMutex;
 };

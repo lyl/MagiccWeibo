@@ -78,7 +78,9 @@ void CWeiboManage::OnWeiboRespComplated( unsigned int optionId, const char* http
 					string relativePath = "Temp//" + uid + ".jpg"; 
 					picPath += relativePath;
 
-					UpdateUserProfile(psText,picPath.c_str(),profile_image_url.c_str());
+					wstring wstrText(psText);
+
+					UpdateUserProfile(wstrText,picPath,profile_image_url);
 
 					delete[] psText;
 				}
@@ -182,7 +184,7 @@ void CWeiboManage::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
  		picPath += relativePath;
  
 
-		UpdateTimelineList(m_lastWeiboId,psText,psWeiboText,picPath.c_str(),profile_image_url.c_str());
+		UpdateTimelineList(m_lastWeiboId,psText,psWeiboText,picPath,profile_image_url);
 
 
 
@@ -271,7 +273,7 @@ bool CWeiboManage::CheckExistUser()
 void CWeiboManage::InitWeibo()
 {
 	m_weiboPtr->setOption(weibo::WOPT_ACCESS_TOKEN,m_accessToken.c_str());
-	ID var(ID::IDT_ID,m_strUid.c_str());
+	ID var(ID::IDT_ID,m_strUid.c_str(),"");
 	m_weiboPtr->getMethod()->getUsersShow(var);
 	m_weiboPtr->getMethod()->getStatusesFriendTimeline();
 }

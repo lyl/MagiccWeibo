@@ -144,6 +144,8 @@ void main_frame::OnPrepare( TNotifyUI& msg )
 	m_weiboManage.StartUp();
 	m_layoutManage.SetPaintManage(&m_PaintManager);
 
+	//m_weiboManage.m_pLayoutManage = &m_layoutManage;
+
 	m_weiboManage.UpdateUserProfile = std::tr1::bind(&CLayoutManage::UpdateUserProfile,&m_layoutManage,_1,_2,_3);
 	m_weiboManage.UpdateUnread = std::tr1::bind(&CLayoutManage::UpdateUnread,&m_layoutManage,_1);
 	m_weiboManage.UpdateTimelineList = std::tr1::bind(&CLayoutManage::UpdateTimelineList,&m_layoutManage,_1,_2,_3,_4,_5);
