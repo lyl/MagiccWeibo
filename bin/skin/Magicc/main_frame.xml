@@ -36,7 +36,7 @@
 								<Label bkcolor="#FFFFFFFF" text="" width="32"></Label>
 								<Button name="userNameBtn"  font="1" padding="10" text="时间轴" hottextcolor="#FF0000FF" bkcolor="#FFFFFFFF">
 								</Button>
-								<Label name="unreadTimelineCount" width="30" text="" bkcolor="#FFFFFFFF" font="1" textcolor="#FFFF0000"></Label>
+								<Label name="unreadTimelineCount" width="30" text="" align="right center" bkcolor="#FFFFFFFF"  font="1" textcolor="#FFFF0000"></Label>
 							</HorizontalLayout>
 						</ListContainerElement>
 						<ListContainerElement height="30" >

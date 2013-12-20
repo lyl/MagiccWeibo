@@ -84,7 +84,19 @@ bool CPicDownloadManage::ShutDown()
 
 void CPicDownloadManage::AddDownloadTask( string strPicName,string strUrl,CControlUI *pControl )
 {
-	WaitForSingleObject(m_taskMutex,INFINITE);
+	DWORD retn = WaitForSingleObject(m_taskMutex,INFINITE);
+	if (retn == WAIT_OBJECT_0)
+	{
+
+	}
+	else if (retn == WAIT_FAILED)
+	{
+#ifdef _DEBUG
+		CDuiString str;
+		str.Format(_T("ÏÂÔØµÈ´ýÊ§°Ü!"));
+		OutputDebugString(str);
+#endif	
+	}
 	static int count = 0;
 	int key = rand();
 
@@ -140,8 +152,13 @@ CPicDownloadManage* CPicDownloadManage::Instance()
 	
 	if (NULL == m_pInstace)
 	{
-		m_pInstace = new CPicDownloadManage;
-		m_pInstace->StartUp();
+		Util::Mutex mt;
+		Util::Lock lock(mt);
+		if (NULL == m_pInstace)
+		{
+			m_pInstace = new CPicDownloadManage;
+			m_pInstace->StartUp();
+		}
 	}
 
 	return m_pInstace;

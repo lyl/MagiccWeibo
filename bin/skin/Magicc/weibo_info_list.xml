@@ -10,9 +10,6 @@
 					<Label name="userScreenName" font="1" textcolor="#FF000000"></Label>
 					<Text showhtml="true" name="weiboInfo"></Text>
 				</VerticalLayout>
-				<HorizontalLayout>
-					<Button name="weiboTime" textcolor="#FFDAE9F3"></Button>
-				</HorizontalLayout>
 			</HorizontalLayout>
 		</HorizontalLayout>
 	</ListContainerElement>

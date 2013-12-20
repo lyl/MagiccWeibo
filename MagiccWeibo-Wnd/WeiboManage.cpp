@@ -16,7 +16,6 @@ CWeiboManage::~CWeiboManage(void)
 void CWeiboManage::OnWeiboRespComplated( unsigned int optionId, const char* httpHeader, weibo::ParsingObject* result, const weibo::UserTaskInfo* pTask )
 {
 
-	Util::Lock lock(mutex);
 
 	if (result)
 	{
@@ -126,6 +125,7 @@ void CWeiboManage::OnWeiboRespStoped( unsigned int optionId, const weibo::UserTa
 
 void CWeiboManage::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
 {
+	Util::Lock lock(mutex);
 
  	USES_CONVERSION;
  	ParsingObjectPtr pAllNewWeibo = parsingObjPtr->getSubObjectByKey("statuses");
@@ -136,6 +136,13 @@ void CWeiboManage::RefreshTimeline(ParsingObjectPtr &parsingObjPtr)
  	}
  
  	int newWeiboCount = pAllNewWeibo->getSubCounts();
+
+
+#ifdef _DEBUG
+	CDuiString str;
+	str.Format(_T("Î¢²©¸öÊý£º%d\n"),newWeiboCount);
+	OutputDebugString(str);
+#endif	
  
  	for (int i = newWeiboCount - 1 ; i >= 0 ; i --)
  	{

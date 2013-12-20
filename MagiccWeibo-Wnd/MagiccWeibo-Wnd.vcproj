@@ -211,6 +211,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\WndShadow.cpp"
+				>
+			</File>
 			<Filter
 				Name="Controls"
 				>
@@ -291,6 +295,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WndShadow.h"
 				>
 			</File>
 			<Filter

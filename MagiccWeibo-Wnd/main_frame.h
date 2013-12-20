@@ -3,10 +3,11 @@
 
 #include "WeiboManage.h"
 #include "LayoutManage.h"
+#include "WndShadow.h"
 
 class CMagiccWebBrowserEventHandler;
 class CWeiboManage;
-class main_frame : public WindowImplBase
+	class main_frame : public WindowImplBase
 {
 public:
 	main_frame(void);
@@ -26,6 +27,7 @@ public:
 	virtual CDuiString GetSkinFolder();
 
 	virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
+	virtual LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
@@ -55,5 +57,6 @@ private:
 	CLayoutManage m_layoutManage;
 
 	CDialogBuilder m_dlgBuilder;
+	CWndShadow m_wndShadow;
 
 };

@@ -202,6 +202,8 @@ LRESULT main_frame::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 	m_weiboManage.ShutDown();
 
+	CPicDownloadManage::ReleaseInstance();
+
 	if (m_pWebBrowserEventHander)
 	{
 		delete m_pWebBrowserEventHander;
@@ -395,4 +397,15 @@ bool main_frame::OnRefreshUnReadTimeline( void *param )
 
 	return false;
 
+}
+
+LRESULT main_frame::OnCreate( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+{
+	m_wndShadow.Create(m_hWnd);
+	m_wndShadow.SetSize(10);
+	m_wndShadow.SetPosition(0, 0);
+	m_wndShadow.SetDarkness(70);
+	m_wndShadow.SetSharpness(10);
+
+	return WindowImplBase::OnCreate(uMsg,wParam,lParam,bHandled);
 }

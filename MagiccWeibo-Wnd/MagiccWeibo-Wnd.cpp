@@ -5,6 +5,7 @@
 #include "MagiccWeibo-Wnd.h"
 #include "main_frame.h"
 
+
 #define MAX_LOADSTRING 100
 CComModule _Module;
 
@@ -15,6 +16,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	CPaintManagerUI::SetInstance(hInstance);
 	//CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath());
+	CWndShadow::Initialize(hInstance);
+
 
 	HINSTANCE hInstRich = ::LoadLibrary(_T("Riched20.dll"));
 

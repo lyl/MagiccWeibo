@@ -237,7 +237,10 @@ void CLayoutManage::UpdateTimelineList( INT64 uid,LPCTSTR strUser,LPCTSTR strWei
 	if (pTimelineList)
 	{
 		pTimelineList->AddAt(pListContainerUI,0);
+		pTimelineList->SelectItem(0);
 	}
+
+
 
 // 	if (pWeiboInfo)
 // 	{
